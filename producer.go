@@ -36,6 +36,12 @@ func Example_syncProducer() {
 	
 	defer tracing.Stop()
 
+	// initialize SERVER span kind by leveraging the global tracer
+	sp := opentracing.StartSpan("incoming")
+	sp.SetTag("span.kind","server")
+	sp.SetTag("test-tag", "exampleTag")
+	sp.Finish()
+
 	cfg := sarama.NewConfig()
 	cfg.Producer.Return.Successes = true
 
@@ -51,6 +57,13 @@ func Example_syncProducer() {
 		Topic: "TestTopic",
 		Value: sarama.StringEncoder(RandStringBytesMask(8)),
 	}
+
+	// Inject span context into carrier for propagation
+	carrier := saramatrace.NewProducerMessageCarrier(msg)
+	err_injecting := opentracing.GlobalTracer().Inject(sp.Context(), opentracing.TextMap, carrier)
+	fmt.Println("err3->",err_injecting)
+	
+
 	_, _, err = producer.SendMessage(msg)
 	if err != nil {
 		panic(err)
