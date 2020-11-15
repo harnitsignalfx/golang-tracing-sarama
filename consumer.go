@@ -1,20 +1,20 @@
 package main
 
 import (
-	"log"
 	"fmt"
+	"log"
 
-	saramatrace "github.com/signalfx/signalfx-go-tracing/contrib/Shopify/sarama"
 	"github.com/signalfx/signalfx-go-tracing/ddtrace/tracer"
 	"github.com/signalfx/signalfx-go-tracing/tracing"
+
+	saramatrace "github.com/signalfx/signalfx-go-tracing/contrib/Shopify/sarama"	
 	sarama "gopkg.in/Shopify/sarama.v1"
 )
 
-
 func Example_consumer() {
-	tracing.Start(tracing.WithServiceName("Kafka-Consumer"),tracing.WithEndpointURL("https://ingest.<realm>.signalfx.com/v2/trace"),
-		tracing.WithAccessToken("<insert-token>"),tracing.WithGlobalTag("environment","Kafka-Testing"))
-	
+	tracing.Start(tracing.WithServiceName("Kafka-Consumer"), tracing.WithEndpointURL("https://ingest.<realm>.signalfx.com/v2/trace"),
+		tracing.WithAccessToken("<my-token>"), tracing.WithGlobalTag("environment", "kafka-testing"))
+
 	defer tracing.Stop()
 	consumer, err := sarama.NewConsumer([]string{"<broker-ip>:9092"}, nil)
 	if err != nil {
@@ -44,7 +44,6 @@ func Example_consumer() {
 }
 
 func main() {
-	
 
 	fmt.Println("Calling consumer")
 	Example_consumer()
